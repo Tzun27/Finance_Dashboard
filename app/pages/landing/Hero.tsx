@@ -1,4 +1,4 @@
-import { ScrollToButton } from "@/components/helper_functions/ScrollToButton";
+import { ScrollButton } from "@/components/ScrollButton";
 
 export function Hero() {
   return (
@@ -11,18 +11,18 @@ export function Hero() {
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
             Say goodbye to outdated financial tools. Track, calculate, and visualize your financial goals
-            with an interface that's simple, intuitive, and never boring.
+            with an interface that&apos;s simple, intuitive, and never boring.
           </p>
         </div>
         
         <div className="mt-24 flex flex-col items-center justify-center gap-4">
-          <ScrollToButton 
+          <ScrollButton
             targetId="features"
             size="lg" 
             className="text-base"
           >
             Explore Tools
-          </ScrollToButton>
+          </ScrollButton>
           <p className="text-sm text-muted-foreground">
             Compound Interest Calculator • Budget Planner • Investment Planner • Savings Visualizer • Debt Manager
           </p>
