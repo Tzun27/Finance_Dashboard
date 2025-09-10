@@ -14,51 +14,79 @@ export function CompoundInterestCalculator() {
   const [compoundingFrequency, setCompoundingFrequency] = useState('annually');
   const [rateVariance, setRateVariance] = useState('0');
 
-  // Calculate compound interest data
+  // Calculate compound interest data using proper compound interest formula
   const chartData = useMemo(() => {
-    const initial = parseFloat(initialAmount) || 0;
-    const monthlyContrib = parseFloat(monthlyContribution) || 0;
-    const annualRate = parseFloat(annualInterestRate) / 100 || 0;
-    const years = parseInt(timeHorizon) || 1;
-    const variance = parseFloat(rateVariance) / 100 || 0;
+    const P = parseFloat(initialAmount) || 0;              // Initial principal
+    const PMT = parseFloat(monthlyContribution) || 0;      // Monthly contribution
+    const r = parseFloat(annualInterestRate) / 100 || 0;   // Annual interest rate
+    const t = parseInt(timeHorizon) || 1;                  // Number of years
+    const variance = parseFloat(rateVariance) / 100 || 0;  // Rate variance
+
+    // Compounding periods per year: 12 for monthly, 1 for annually
+    const n = compoundingFrequency === 'monthly' ? 12 : 1;
 
     const data = [];
 
-    // Calculate for each year
-    for (let year = 0; year <= years; year++) {
-      // Baseline calculation (no interest)
-      const baseline = initial + (monthlyContrib * 12 * year);
+    // Calculate for each year using the compound interest formula
+    for (let year = 0; year <= t; year++) {
+      // Baseline calculation (no interest, just contributions)
+      const baseline = P + (PMT * 12 * year);
 
-      // Main compound interest calculation
+      // Calculate compound interest based on compounding frequency
+      const calculateFutureValue = (rate: number) => {
+        if (year === 0) return P; // At year 0, only initial amount
+
+        if (compoundingFrequency === 'annually') {
+      // Use previous simple method for annual compounding
       // Only money present at beginning of year receives interest
-      let compoundValue = initial;
-      let highVarianceValue = initial;
-      let lowVarianceValue = initial;
+          let value = P;
+          for (let y = 1; y <= year; y++) {
+          // Apply interest to money from beginning of year
+            value = value * (1 + rate);
+            // Add annual contributions (12 months * monthly contribution)
+            value += PMT * 12;
+          }
+          return value;
+        } else {
+          // Use proper compound interest formula for monthly compounding
+          const effectiveRate = rate / n; // r/n
+          const compoundExponent = n * year; // nt
 
-      for (let y = 1; y <= year; y++) {
-        // Apply interest to money from beginning of year
-        compoundValue = compoundValue * (1 + annualRate);
-        highVarianceValue = highVarianceValue * (1 + annualRate + variance);
-        lowVarianceValue = lowVarianceValue * (1 + annualRate - variance);
+          // First part: P(1 + r/n)^(nt)
+          const principalGrowth = P * Math.pow(1 + effectiveRate, compoundExponent);
 
-        // Add annual contributions (12 months * monthly contribution)
-        const annualContribution = monthlyContrib * 12;
-        compoundValue += annualContribution;
-        highVarianceValue += annualContribution;
-        lowVarianceValue += annualContribution;
-      }
+          // Second part: PMT * (((1 + r/n)^nt - 1) / (r/n))
+          let annuityGrowth = 0;
+          if (effectiveRate > 0) {
+            // Standard formula when interest rate > 0
+            annuityGrowth = PMT * (Math.pow(1 + effectiveRate, compoundExponent) - 1) / effectiveRate;
+          } else {
+            // When interest rate = 0, annuity growth is just total contributions
+            annuityGrowth = PMT * compoundExponent;
+          }
+
+          return principalGrowth + annuityGrowth;
+        }
+      };
+
+      // Calculate main compound interest
+      const compoundValue = calculateFutureValue(r);
+
+      // Calculate variance scenarios
+      const highVarianceValue = variance > 0 ? calculateFutureValue(r + variance) : null;
+      const lowVarianceValue = variance > 0 ? calculateFutureValue(r - variance) : null;
 
       data.push({
         year: year,
         baseline: Math.round(baseline),
         compound: Math.round(compoundValue),
-        highVariance: variance > 0 ? Math.round(highVarianceValue) : null,
-        lowVariance: variance > 0 ? Math.round(lowVarianceValue) : null,
+        highVariance: highVarianceValue ? Math.round(highVarianceValue) : null,
+        lowVariance: lowVarianceValue ? Math.round(lowVarianceValue) : null,
       });
     }
 
     return data;
-  }, [initialAmount, monthlyContribution, annualInterestRate, timeHorizon, rateVariance]);
+  }, [initialAmount, monthlyContribution, annualInterestRate, timeHorizon, rateVariance, compoundingFrequency]);
 
   return (
     <section id="compound-interest-calculator" className="py-24 bg-background">
