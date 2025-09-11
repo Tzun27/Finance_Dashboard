@@ -101,8 +101,9 @@ export function CompoundInterestCalculator() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-8 gap-12 items-center transform-gpu transition-transform duration-300 
+                     lg:scale-100 xl:scale-105 2xl:scale-110">
+          <div className="lg:col-span-3 space-y-6">
             <h3 className="text-2xl font-semibold text-foreground">
               Calculator Settings
             </h3>
@@ -210,7 +211,7 @@ export function CompoundInterestCalculator() {
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+          <div className="lg:col-span-5 bg-card border border-border rounded-lg p-6 shadow-sm">
             <div className="mb-4">
               <h4 className="text-lg font-medium text-foreground mb-2">
                 Investment Growth Projection
