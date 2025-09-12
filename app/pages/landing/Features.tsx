@@ -35,14 +35,17 @@ export function Features() {
             </CardHeader>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow">
+          <Card
+            className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:scale-105 hover:bg-accent/50"
+            onClick={() => scrollToElement('currency-converter', 80)}
+          >
             <CardHeader>
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                 <Calculator className="h-6 w-6 text-primary" />
               </div>
-              <CardTitle>Smart Calculations</CardTitle>
+              <CardTitle className="group-hover:text-primary transition-colors">Currency Conversion</CardTitle>
               <CardDescription>
-                Powerful financial calculators that help you understand scenarios and make informed decisions.
+                Real-time currency conversion with live exchange rates for informed financial decisions.
               </CardDescription>
             </CardHeader>
           </Card>
