@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { ArrowRightLeft, TrendingUp, Globe, Banknote } from 'lucide-react';
+import { ArrowRightLeft, TrendingUp, Globe, Banknote, BarChart3 } from 'lucide-react';
 
 export function CurrencyConverter() {
   const [fromAmount, setFromAmount] = useState('1000');
@@ -218,6 +218,32 @@ export function CurrencyConverter() {
                   <span className="text-muted-foreground">EUR → GBP</span>
                   <span className="font-medium">0.9235</span>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Placeholder Chart Section - Between input fields and features */}
+        <div className="mt-16 transform-gpu transition-transform duration-300 
+                     lg:scale-100 xl:scale-105 2xl:scale-110">
+          <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+            <div className="mb-6">
+              <h4 className="text-lg font-medium text-foreground mb-2">
+                {fromCurrency} to {toCurrency} Exchange Rate Trend
+              </h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                Historical exchange rate data over the past 30 days
+              </p>
+
+              {/* Placeholder Chart Area */}
+              <div className="h-64 bg-muted/30 rounded-lg border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center">
+                <BarChart3 className="h-12 w-12 text-muted-foreground/40 mb-3" />
+                <p className="text-muted-foreground/60 text-sm font-medium mb-1">
+                  Exchange Rate Chart
+                </p>
+                <p className="text-muted-foreground/40 text-xs text-center max-w-48">
+                  Interactive chart showing {fromCurrency}/{toCurrency} rate trends over time - to be implemented
+                </p>
               </div>
             </div>
           </div>
