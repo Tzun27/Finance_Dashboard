@@ -12,6 +12,13 @@ A modern, interactive web application for visualizing and planning your financia
 - **Professional tooltips** with detailed breakdowns
 - **Responsive design** that scales beautifully across all devices
 
+### 💱 Currency Converter
+- **Real-time exchange rates** for major world currencies
+- **Interactive conversion** with amount input and currency selection
+- **Historical rate trends** with placeholder chart visualization
+- **Popular currency pairs** with live rate examples
+- **Clean, intuitive interface** for quick conversions
+
 ### 🎨 Modern UI/UX
 - **Clean, intuitive interface** built with shadcn/ui components
 - **Dark/light theme support** using CSS variables
@@ -77,7 +84,7 @@ A modern, interactive web application for visualizing and planning your financia
 - **[PostCSS](https://postcss.org/)** - CSS post-processing
 - **[Geist Font](https://vercel.com/font)** - Modern typography
 
-## 📊 Chart Features
+## 📊 Compound Interest Chart Features
 
 ### Interactive Visualizations
 - **Primary Line**: Compound interest growth (thick, prominent)
