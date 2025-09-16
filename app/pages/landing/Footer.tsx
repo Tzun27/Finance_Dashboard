@@ -1,4 +1,5 @@
-import { BarChart3 } from "lucide-react";
+import { BarChart3, Github, Linkedin } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function Footer() {
   return (
@@ -10,6 +11,40 @@ export function Footer() {
             <span className="ml-2 text-sm text-muted-foreground">
               © 2025 Finance Visualizer. Built with Next.js and shadcn/ui.
             </span>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              asChild
+            >
+              <a
+                href="https://github.com/Tzun27"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub Profile"
+              >
+                <Github className="h-4 w-4" />
+              </a>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              asChild
+            >
+              <a
+                href="www.linkedin.com/in/hao-tzun-chai"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn Profile"
+              >
+                <Linkedin className="h-4 w-4" />
+              </a>
+            </Button>
           </div>
         </div>
       </div>
