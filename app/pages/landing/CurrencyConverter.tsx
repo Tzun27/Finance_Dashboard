@@ -33,7 +33,7 @@ export function CurrencyConverter() {
   };
 
   return (
-    <section id="currency-converter" className="py-24 bg-muted/30">
+    <section id="currency-converter" className="py-24 bg-muted/30 animate-fade-in-up animate-delay-400">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
