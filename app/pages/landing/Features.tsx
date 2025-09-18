@@ -50,14 +50,17 @@ export function Features() {
             </CardHeader>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow">
+          <Card
+            className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:scale-105 hover:bg-accent/50"
+            onClick={() => scrollToElement('mortgage-calculator', 80)}
+          >
             <CardHeader>
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <PieChart className="h-6 w-6 text-primary" />
+              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <Calculator className="h-6 w-6 text-primary" />
               </div>
-              <CardTitle>Visual Insights</CardTitle>
+              <CardTitle className="group-hover:text-primary transition-colors">Mortgage Calculator</CardTitle>
               <CardDescription>
-                Transform complex financial data into clear, actionable insights with interactive charts.
+                Calculate your mortgage payments and see how different scenarios affect your loan.
               </CardDescription>
             </CardHeader>
           </Card>

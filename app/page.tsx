@@ -4,6 +4,7 @@ import { Hero } from "@/app/pages/landing/Hero";
 import { Features } from "@/app/pages/landing/Features";
 import { CompoundInterestCalculator } from "@/app/pages/landing/CompoundInterestCalculator";
 import { CurrencyConverter } from "@/app/pages/landing/CurrencyConverter";
+import { MortgageCalculator } from "@/app/pages/landing/MortgageCalculator";
 import { CTA } from "@/app/pages/landing/CTA";
 import { Footer } from "@/app/pages/landing/Footer";
 
@@ -16,6 +17,7 @@ export default function Home() {
       <Features />
       <CompoundInterestCalculator />
       <CurrencyConverter />
+      <MortgageCalculator />
       <CTA />
       <Footer />
     </div>
