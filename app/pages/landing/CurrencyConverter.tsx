@@ -33,14 +33,14 @@ export function CurrencyConverter() {
   };
 
   return (
-    <section id="currency-converter" className="py-24 bg-muted/30 animate-fade-in-up animate-delay-400">
+    <section id="currency-converter" className="min-h-screen flex items-center animate-fade-in-up animate-delay-400">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Currency Converter
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Convert between currencies with real-time exchange rates for accurate 
+            Convert between currencies with real-time exchange rates for accurate
             financial planning and international transactions.
           </p>
         </div>
@@ -52,10 +52,10 @@ export function CurrencyConverter() {
               Live Exchange Rates
             </h3>
             <p className="text-muted-foreground leading-relaxed">
-              Get accurate, up-to-date exchange rates for all major currencies. 
+              Get accurate, up-to-date exchange rates for all major currencies.
               Perfect for travel planning, international business, or investment analysis.
             </p>
-            
+
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="from-amount">Amount</Label>
@@ -73,7 +73,7 @@ export function CurrencyConverter() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-5 gap-2 items-end">
                 <div className="col-span-2 space-y-2">
                   <Label htmlFor="from-currency">From</Label>
@@ -90,10 +90,10 @@ export function CurrencyConverter() {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="flex justify-center">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="icon"
                     onClick={handleSwapCurrencies}
                     className="rounded-full"
@@ -101,7 +101,7 @@ export function CurrencyConverter() {
                     <ArrowRightLeft className="h-4 w-4" />
                   </Button>
                 </div>
-                
+
                 <div className="col-span-2 space-y-2">
                   <Label htmlFor="to-currency">To</Label>
                   <Select value={toCurrency} onValueChange={setToCurrency}>
@@ -118,7 +118,7 @@ export function CurrencyConverter() {
                   </Select>
                 </div>
               </div>
-              
+
               <div className="p-4 bg-card border border-border rounded-lg">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Converted Amount</span>
@@ -144,7 +144,7 @@ export function CurrencyConverter() {
                 Professional currency conversion tools for all your financial needs
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
@@ -158,7 +158,7 @@ export function CurrencyConverter() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
                     <Globe className="h-5 w-5 text-primary mt-0.5" />
@@ -171,7 +171,7 @@ export function CurrencyConverter() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
@@ -184,7 +184,7 @@ export function CurrencyConverter() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
                     <ArrowRightLeft className="h-5 w-5 text-primary mt-0.5" />
@@ -198,7 +198,7 @@ export function CurrencyConverter() {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-6 p-4 bg-muted/50 rounded-lg">
               <h6 className="font-medium text-foreground mb-2">Popular Exchange Rates</h6>
               <div className="grid grid-cols-2 gap-4 text-sm">

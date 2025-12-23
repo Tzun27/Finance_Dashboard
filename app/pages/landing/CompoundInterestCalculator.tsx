@@ -37,11 +37,11 @@ export function CompoundInterestCalculator() {
         if (year === 0) return P; // At year 0, only initial amount
 
         if (compoundingFrequency === 'annually') {
-      // Use previous simple method for annual compounding
-      // Only money present at beginning of year receives interest
+          // Use previous simple method for annual compounding
+          // Only money present at beginning of year receives interest
           let value = P;
           for (let y = 1; y <= year; y++) {
-          // Apply interest to money from beginning of year
+            // Apply interest to money from beginning of year
             value = value * (1 + rate);
             // Add annual contributions (12 months * monthly contribution)
             value += PMT * 12;
@@ -89,14 +89,14 @@ export function CompoundInterestCalculator() {
   }, [initialAmount, monthlyContribution, annualInterestRate, timeHorizon, rateVariance, compoundingFrequency]);
 
   return (
-    <section id="compound-interest-calculator" className="py-24 bg-background animate-fade-in-up animate-delay-300">
+    <section id="compound-interest-calculator" className="min-h-screen flex items-center bg-background animate-fade-in-up animate-delay-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Compound Interest Calculator
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Visualize the power of compound interest with our interactive calculator. 
+            Visualize the power of compound interest with our interactive calculator.
             See how your investments can grow over time with different scenarios.
           </p>
         </div>
@@ -249,8 +249,8 @@ export function CompoundInterestCalculator() {
                   margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis 
-                    dataKey="year" 
+                  <XAxis
+                    dataKey="year"
                     className="text-muted-foreground"
                     fontSize={12}
                     label={{
@@ -261,7 +261,7 @@ export function CompoundInterestCalculator() {
                     }}
                     height={30}
                   />
-                  <YAxis 
+                  <YAxis
                     className="text-muted-foreground"
                     fontSize={12}
                     tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
@@ -273,7 +273,7 @@ export function CompoundInterestCalculator() {
                     }}
                     width={60}
                   />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{
                       backgroundColor: 'rgba(255, 255, 255, 0.95)',
                       border: '1px solid rgba(0, 0, 0, 0.1)',
