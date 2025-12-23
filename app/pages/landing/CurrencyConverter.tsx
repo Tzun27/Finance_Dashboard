@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { ArrowRightLeft, BarChart3 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 
 // Chart component for displaying exchange rate trends
@@ -24,6 +25,9 @@ export function CurrencyConverter() {
   const [popularRates, setPopularRates] = useState<{ [key: string]: number }>({});
   const [historicalData, setHistoricalData] = useState<{ date: string; rate: number }[]>([]);
   const [isLoadingChart, setIsLoadingChart] = useState(false);
+  const [timeRange, setTimeRange] = useState('1M');
+
+  const timeRanges = ['5D', '1M', '1Y', '5Y', 'Max'];
 
   // Popular currencies with their symbols
   const currencies = [
@@ -109,22 +113,103 @@ export function CurrencyConverter() {
 
       const endDate = new Date();
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 30);
+
+      switch (timeRange) {
+        case '5D':
+          startDate.setDate(startDate.getDate() - 4);
+          break;
+        case '1M':
+          startDate.setDate(startDate.getDate() - 30);
+          break;
+        case '1Y':
+          startDate.setFullYear(startDate.getFullYear() - 1);
+          break;
+        case '5Y':
+          startDate.setFullYear(startDate.getFullYear() - 5);
+          break;
+        case 'Max':
+          startDate.setFullYear(startDate.getFullYear() - 10);
+          break;
+        default:
+          startDate.setDate(startDate.getDate() - 30);
+      }
 
       const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
+      // Frankfurter API is free and doesn't require an API key
+      // It supports daily data. For 1D, we'll show the recent trend (last few days) since intraday isn't available.
       const response = await fetch(
-        `https://api.fxratesapi.com/timeseries?api_key=${apiKey}&start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}&base=${fromCurrency}&currencies=${toCurrency}`
+        `https://api.frankfurter.dev/v1/${formatDate(startDate)}..${formatDate(endDate)}?base=${fromCurrency}&symbols=${toCurrency}`
       );
 
-      if (!response.ok) return;
+      if (!response.ok) {
+        // Fallback or specific error handling could go here
+        throw new Error('Failed to fetch historical data from Frankfurter API');
+      }
 
       const data = await response.json();
-      if (data.success && data.rates) {
-        const chartData = Object.entries(data.rates).map(([date, rates]: [string, any]) => ({
-          date,
-          rate: rates[toCurrency]
-        }));
+
+      // Frankfurter response format: { amount: 1, base: 'USD', start_date: '...', end_date: '...', rates: { '2024-01-01': { 'EUR': 0.9 } } }
+      if (data.rates) {
+        const chartData: { date: string; rate: number }[] = [];
+        let currentDate = new Date(startDate);
+        const end = new Date(endDate);
+        const todayStr = formatDate(end);
+        let lastRate: number | null = null;
+
+        // Helper to format date as YYYY-MM-DD for object lookup
+        const toDateString = (date: Date) => date.toISOString().split('T')[0];
+
+        // Find the first available rate if our start date has no data
+        // This prevents starting with null if the range starts on a weekend
+        if (!data.rates[toDateString(currentDate)]) {
+          const sortedDates = Object.keys(data.rates).sort();
+          if (sortedDates.length > 0) {
+            // Initialize lastRate with the first available data point
+            // Note: This effectively backfills the initial gap until real data starts,
+            // or we could just skip until we hit data. 
+            // Let's check if the first available date is *before* or *after* our start.
+            // Actually, if we just iterate, we can start adding points once we have a lastRate.
+
+            // Optimization: Try to find a rate from the API response to seed lastRate 
+            // if the first day is missing.
+            const firstAvailableDate = sortedDates[0];
+            if (data.rates[firstAvailableDate] && data.rates[firstAvailableDate][toCurrency]) {
+              lastRate = data.rates[firstAvailableDate][toCurrency];
+            }
+          }
+        }
+
+        while (currentDate <= end) {
+          const dateStr = toDateString(currentDate);
+          const dailyRate = data.rates[dateStr];
+
+          // Determine the rate for this day
+          let rateForDay = lastRate;
+
+          // If we have API data for this day, use it
+          if (dailyRate && dailyRate[toCurrency]) {
+            rateForDay = dailyRate[toCurrency];
+          }
+
+          // OVERRIDE: If this is today and we have a live rate, use it
+          // This ensures the chart ends with the most current value
+          if (dateStr === todayStr && exchangeRate) {
+            rateForDay = exchangeRate;
+          }
+
+          // Update lastRate for forward fill
+          if (rateForDay !== null) {
+            lastRate = rateForDay;
+            chartData.push({
+              date: dateStr,
+              rate: rateForDay
+            });
+          }
+
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+
         setHistoricalData(chartData);
       }
     } catch (err) {
@@ -151,7 +236,7 @@ export function CurrencyConverter() {
   // Fetch historical data when currencies change
   useEffect(() => {
     fetchHistoricalData();
-  }, [fromCurrency, toCurrency]);
+  }, [fromCurrency, toCurrency, timeRange, exchangeRate]);
 
   const handleSwapCurrencies = () => {
     const tempCurrency = fromCurrency;
@@ -322,9 +407,27 @@ export function CurrencyConverter() {
               <h4 className="text-lg font-medium text-foreground mb-2">
                 {fromCurrency} to {toCurrency} Exchange Rate Trend
               </h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Historical exchange rate data over the past 30 days
-              </p>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm text-muted-foreground">
+                  Historical exchange rate data
+                </p>
+                <div className="flex space-x-1">
+                  {timeRanges.map((range) => (
+                    <button
+                      key={range}
+                      onClick={() => setTimeRange(range)}
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-full transition-colors",
+                        timeRange === range
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted"
+                      )}
+                    >
+                      {range}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {/* Chart Area */}
               <div className="h-64 bg-muted/30 rounded-lg p-4">
@@ -333,7 +436,12 @@ export function CurrencyConverter() {
                     <p className="text-muted-foreground">Loading chart data...</p>
                   </div>
                 ) : historicalData.length > 0 ? (
-                  <ExchangeRateChart data={historicalData} fromCurrency={fromCurrency} toCurrency={toCurrency} />
+                  <ExchangeRateChart
+                    data={historicalData}
+                    fromCurrency={fromCurrency}
+                    toCurrency={toCurrency}
+                    timeRange={timeRange}
+                  />
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center">
                     <BarChart3 className="h-12 w-12 text-muted-foreground/40 mb-3" />
