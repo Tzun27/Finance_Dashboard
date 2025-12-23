@@ -12,12 +12,19 @@ A modern, interactive web application for visualizing and planning your financia
 - **Professional tooltips** with detailed breakdowns
 - **Responsive design** that scales beautifully across all devices
 
+### 🏠 Mortgage Calculator
+- **Comprehensive inputs** for home price, down payment, rates, and terms
+- **Detailed cost breakdown** including property tax, insurance, and HOA
+- **Amortization schedule** with monthly/yearly views and interactive charts
+- **Extra payment analysis** to visualize savings from pre-payments
+- **Smart validation** to ensure realistic financial projections
+
 ### 💱 Currency Converter
-- **Real-time exchange rates** for major world currencies
-- **Interactive conversion** with amount input and currency selection
-- **Historical rate trends** with placeholder chart visualization
-- **Popular currency pairs** with live rate examples
-- **Clean, intuitive interface** for quick conversions
+- **Real-time exchange rates** powered by FxRatesAPI
+- **Live historical trends** visualized with custom interactive SVG charts
+- **Smart caching** and debounced updates for performance
+- **Min/Max/Avg statistics** for selected currency pairs
+- **Popular currency pairs** dashboard with live updates
 
 ### 🎨 Modern UI/UX
 - **Clean, intuitive interface** built with shadcn/ui components
@@ -40,7 +47,13 @@ A modern, interactive web application for visualizing and planning your financia
    cd finance_visualizer/finance-dashboard
    ```
 
-2. **Install dependencies**
+2. **Setup Environment**
+   Create a `.env.local` file with your API keys:
+   ```bash
+   NEXT_PUBLIC_FX_RATES_API_KEY=your_key_here
+   ```
+
+3. **Install dependencies**
    ```bash
    npm install
    # or
@@ -51,7 +64,7 @@ A modern, interactive web application for visualizing and planning your financia
    bun install
    ```
 
-3. **Run the development server**
+4. **Run the development server**
    ```bash
    npm run dev
    # or
@@ -62,8 +75,20 @@ A modern, interactive web application for visualizing and planning your financia
    bun dev
    ```
 
-4. **Open your browser**
+5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
+
+## 🧪 Testing
+
+The project uses **Vitest** for robust unit testing to ensure calculation accuracy.
+
+```bash
+# Run tests
+npm test
+
+# Run tests with UI
+npm run test:ui
+```
 
 ## 🛠️ Tech Stack
 
@@ -79,25 +104,11 @@ A modern, interactive web application for visualizing and planning your financia
 - **[Lucide React](https://lucide.dev/)** - Beautiful icon library
 - **[Recharts](https://recharts.org/)** - Composable charting library
 
-### Development Tools
+### Development & Testing
+- **[Vitest](https://vitest.dev/)** - Blazing fast unit test framework
 - **[ESLint](https://eslint.org/)** - Code linting and formatting
 - **[PostCSS](https://postcss.org/)** - CSS post-processing
 - **[Geist Font](https://vercel.com/font)** - Modern typography
-
-## 📊 Compound Interest Chart Features
-
-### Interactive Visualizations
-- **Primary Line**: Compound interest growth (thick, prominent)
-- **Baseline**: Simple savings without interest (dashed)
-- **Variance Lines**: Risk scenarios (green/red, conditional)
-- **Responsive Scaling**: Charts adapt to container size
-- **Custom Tooltips**: Detailed hover information
-
-### Calculation Methods
-- **Annual compounding**: Simple year-over-year growth where only money present at year start earns interest
-- **Monthly compounding**: Uses standard compound interest formula `FV = P(1 + r/n)^(nt) + PMT * (((1 + r/n)^nt - 1) / (r/n))`
-- **Real-time updates** as inputs change
-- **Variance modeling** for risk scenario analysis
 
 ## 🔧 Development
 
