@@ -9,7 +9,7 @@ export function Footer() {
           <div className="flex items-center">
             <BarChart3 className="h-6 w-6 text-primary" />
             <span className="ml-2 text-sm text-muted-foreground">
-              © 2025 Finance Visualizer. Built with Next.js and shadcn/ui.
+              © 2025 Finance Visualizer
             </span>
           </div>
 
@@ -37,7 +37,7 @@ export function Footer() {
               asChild
             >
               <a
-                href="www.linkedin.com/in/hao-tzun-chai"
+                href="https://www.linkedin.com/in/hao-tzun-chai"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn Profile"
