@@ -1,18 +1,33 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { ArrowRightLeft, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-
-// Chart component for displaying exchange rate trends
 import { ExchangeRateChart } from '@/components/ExchangeRateChart';
 
+// Helper to format Date to YYYY-MM-DD string
+const toDateString = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
 
+// Popular currencies with their symbols
+const currencies = [
+  { code: 'USD', name: 'US Dollar', symbol: '$' },
+  { code: 'EUR', name: 'Euro', symbol: '€' },
+  { code: 'GBP', name: 'British Pound', symbol: '£' },
+  { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+  { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+  { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
+  { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
+  { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
+];
+
+const timeRanges = ['5D', '1M', '1Y', '5Y', 'Max'] as const;
+type TimeRange = (typeof timeRanges)[number];
 
 export function CurrencyConverter() {
   const [fromAmount, setFromAmount] = useState('1000');
@@ -24,66 +39,115 @@ export function CurrencyConverter() {
   const [error, setError] = useState<string | null>(null);
   const [popularRates, setPopularRates] = useState<{ [key: string]: number }>({});
   const [historicalData, setHistoricalData] = useState<{ date: string; rate: number }[]>([]);
-  const [isLoadingChart, setIsLoadingChart] = useState(false);
-  const [timeRange, setTimeRange] = useState('1M');
+  const [isLoadingChart, setIsLoadingChart] = useState(true);
+  const [timeRange, setTimeRange] = useState<TimeRange>('5D');
+  const [fullHistory, setFullHistory] = useState<{ date: string; rate: number }[]>([]);
 
-  const timeRanges = ['5D', '1M', '1Y', '5Y', 'Max'];
-
-  // Popular currencies with their symbols
-  const currencies = [
-    { code: 'USD', name: 'US Dollar', symbol: '$' },
-    { code: 'EUR', name: 'Euro', symbol: '€' },
-    { code: 'GBP', name: 'British Pound', symbol: '£' },
-    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
-    { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
-    { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
-    { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
-    { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
-  ];
-
-  // Fetch exchange rate and convert currency
-  const convertCurrency = async () => {
-    if (!fromAmount || parseFloat(fromAmount) === 0) {
-      setConvertedAmount('');
-      return;
+  // Fetch exchange rate from API
+  const fetchExchangeRate = useCallback(async (from: string, to: string): Promise<number> => {
+    const apiKey = process.env.NEXT_PUBLIC_FXRATES_API_KEY;
+    if (!apiKey || apiKey === 'your_api_key_here') {
+      throw new Error('API key missing');
     }
 
-    setIsLoading(true);
-    setError(null);
+    const response = await fetch(
+      `https://api.fxratesapi.com/convert?from=${from}&to=${to}&amount=1&api_key=${apiKey}`
+    );
 
-    try {
-      const apiKey = process.env.NEXT_PUBLIC_FXRATES_API_KEY;
+    if (!response.ok) throw new Error('Failed to fetch rate');
+    const data = await response.json();
 
-      if (!apiKey || apiKey === 'your_api_key_here') {
-        throw new Error('API key not configured. Please add your FxRatesAPI key to .env.local');
+    if (data.success && data.info) {
+      return data.info.rate;
+    }
+    throw new Error('Invalid rate data');
+  }, []);
+
+  // Process API data and fill gaps for missing dates
+  const processAndFillData = useCallback((
+    rates: Record<string, Record<string, number>>,
+    startDate: Date,
+    endDate: Date,
+    targetCurrency: string
+  ): { date: string; rate: number }[] => {
+    const chartData: { date: string; rate: number }[] = [];
+    const currentDate = new Date(startDate);
+    const endStr = toDateString(endDate);
+
+    // Get initial rate from first available data point
+    const sortedKeys = Object.keys(rates).sort();
+    let lastRate: number | null = sortedKeys.length > 0 && rates[sortedKeys[0]]?.[targetCurrency]
+      ? rates[sortedKeys[0]][targetCurrency]
+      : null;
+
+    while (toDateString(currentDate) <= endStr) {
+      const dateStr = toDateString(currentDate);
+      const dailyRate = rates[dateStr]?.[targetCurrency];
+
+      if (dailyRate !== undefined) {
+        lastRate = dailyRate;
       }
+
+      if (lastRate !== null) {
+        chartData.push({ date: dateStr, rate: lastRate });
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return chartData;
+  }, []);
+
+  // Fetch 5-day historical data
+  const fetch5DayData = useCallback(async (
+    from: string,
+    to: string
+  ): Promise<{ rates: Record<string, Record<string, number>>; startDate: Date; endDate: Date }> => {
+    const endDate = new Date();
+    endDate.setHours(0, 0, 0, 0);
+
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+    startDate.setDate(startDate.getDate() - 4); // 5 days total
+
+    const response = await fetch(
+      `https://api.frankfurter.dev/v1/${toDateString(startDate)}..${toDateString(endDate)}?base=${from}&symbols=${to}`
+    );
+
+    if (!response.ok) throw new Error('Failed to fetch history');
+    const data = await response.json();
+
+    return { rates: data.rates, startDate, endDate };
+  }, []);
+
+  // Fetch full history (10 years) for caching
+  const fetchFullHistory = useCallback(async (from: string, to: string) => {
+    try {
+      const today = new Date();
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() - 1); // Up to yesterday
+
+      const startDate = new Date(today);
+      startDate.setFullYear(today.getFullYear() - 10);
 
       const response = await fetch(
-        `https://api.fxratesapi.com/convert?from=${fromCurrency}&to=${toCurrency}&amount=${fromAmount}&api_key=${apiKey}`
+        `https://api.frankfurter.dev/v1/${toDateString(startDate)}..${toDateString(endDate)}?base=${from}&symbols=${to}`
       );
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
+      if (!response.ok) return;
       const data = await response.json();
 
-      if (data.success && data.result) {
-        setConvertedAmount(data.result.toFixed(2));
-        setExchangeRate(data.info.rate);
-      } else {
-        throw new Error('Invalid response from API');
+      if (data.rates) {
+        const processedFull = processAndFillData(data.rates, startDate, endDate, to);
+        setFullHistory(processedFull);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to convert currency');
-      setConvertedAmount('');
-    } finally {
-      setIsLoading(false);
+      console.error('Failed to fetch full history:', err);
     }
-  };
+  }, [processAndFillData]);
 
   // Fetch popular exchange rates
-  const fetchPopularRates = async () => {
+  const fetchPopularRates = useCallback(async () => {
     try {
       const apiKey = process.env.NEXT_PUBLIC_FXRATES_API_KEY;
       if (!apiKey || apiKey === 'your_api_key_here') return;
@@ -99,149 +163,182 @@ export function CurrencyConverter() {
         setPopularRates(data.rates);
       }
     } catch (err) {
-      // Silently fail for popular rates
       console.error('Failed to fetch popular rates:', err);
     }
-  };
-
-  // Fetch historical exchange rate data
-  const fetchHistoricalData = async () => {
-    setIsLoadingChart(true);
-    try {
-      const apiKey = process.env.NEXT_PUBLIC_FXRATES_API_KEY;
-      if (!apiKey || apiKey === 'your_api_key_here') return;
-
-      const endDate = new Date();
-      const startDate = new Date();
-
-      switch (timeRange) {
-        case '5D':
-          startDate.setDate(startDate.getDate() - 4);
-          break;
-        case '1M':
-          startDate.setDate(startDate.getDate() - 30);
-          break;
-        case '1Y':
-          startDate.setFullYear(startDate.getFullYear() - 1);
-          break;
-        case '5Y':
-          startDate.setFullYear(startDate.getFullYear() - 5);
-          break;
-        case 'Max':
-          startDate.setFullYear(startDate.getFullYear() - 10);
-          break;
-        default:
-          startDate.setDate(startDate.getDate() - 30);
-      }
-
-      const formatDate = (date: Date) => date.toISOString().split('T')[0];
-
-      // Frankfurter API is free and doesn't require an API key
-      // It supports daily data. For 1D, we'll show the recent trend (last few days) since intraday isn't available.
-      const response = await fetch(
-        `https://api.frankfurter.dev/v1/${formatDate(startDate)}..${formatDate(endDate)}?base=${fromCurrency}&symbols=${toCurrency}`
-      );
-
-      if (!response.ok) {
-        // Fallback or specific error handling could go here
-        throw new Error('Failed to fetch historical data from Frankfurter API');
-      }
-
-      const data = await response.json();
-
-      // Frankfurter response format: { amount: 1, base: 'USD', start_date: '...', end_date: '...', rates: { '2024-01-01': { 'EUR': 0.9 } } }
-      if (data.rates) {
-        const chartData: { date: string; rate: number }[] = [];
-        let currentDate = new Date(startDate);
-        const end = new Date(endDate);
-        const todayStr = formatDate(end);
-        let lastRate: number | null = null;
-
-        // Helper to format date as YYYY-MM-DD for object lookup
-        const toDateString = (date: Date) => date.toISOString().split('T')[0];
-
-        // Find the first available rate if our start date has no data
-        // This prevents starting with null if the range starts on a weekend
-        if (!data.rates[toDateString(currentDate)]) {
-          const sortedDates = Object.keys(data.rates).sort();
-          if (sortedDates.length > 0) {
-            // Initialize lastRate with the first available data point
-            // Note: This effectively backfills the initial gap until real data starts,
-            // or we could just skip until we hit data. 
-            // Let's check if the first available date is *before* or *after* our start.
-            // Actually, if we just iterate, we can start adding points once we have a lastRate.
-
-            // Optimization: Try to find a rate from the API response to seed lastRate 
-            // if the first day is missing.
-            const firstAvailableDate = sortedDates[0];
-            if (data.rates[firstAvailableDate] && data.rates[firstAvailableDate][toCurrency]) {
-              lastRate = data.rates[firstAvailableDate][toCurrency];
-            }
-          }
-        }
-
-        while (currentDate <= end) {
-          const dateStr = toDateString(currentDate);
-          const dailyRate = data.rates[dateStr];
-
-          // Determine the rate for this day
-          let rateForDay = lastRate;
-
-          // If we have API data for this day, use it
-          if (dailyRate && dailyRate[toCurrency]) {
-            rateForDay = dailyRate[toCurrency];
-          }
-
-          // OVERRIDE: If this is today and we have a live rate, use it
-          // This ensures the chart ends with the most current value
-          if (dateStr === todayStr && exchangeRate) {
-            rateForDay = exchangeRate;
-          }
-
-          // Update lastRate for forward fill
-          if (rateForDay !== null) {
-            lastRate = rateForDay;
-            chartData.push({
-              date: dateStr,
-              rate: rateForDay
-            });
-          }
-
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        setHistoricalData(chartData);
-      }
-    } catch (err) {
-      console.error('Failed to fetch historical data:', err);
-    } finally {
-      setIsLoadingChart(false);
-    }
-  };
-
-  // Convert currency when inputs change
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      convertCurrency();
-    }, 500); // Debounce API calls
-
-    return () => clearTimeout(timeoutId);
-  }, [fromAmount, fromCurrency, toCurrency]);
-
-  // Fetch popular rates on mount
-  useEffect(() => {
-    fetchPopularRates();
   }, []);
 
-  // Fetch historical data when currencies change
+  // Filter cached data by time range
+  const getFilteredData = useCallback((range: TimeRange, currentRate: number | null): { date: string; rate: number }[] => {
+    if (fullHistory.length === 0) return [];
+
+    const today = new Date();
+    const startDate = new Date(today);
+
+    switch (range) {
+      case '5D':
+        startDate.setDate(today.getDate() - 5);
+        break;
+      case '1M':
+        startDate.setDate(today.getDate() - 30);
+        break;
+      case '1Y':
+        startDate.setFullYear(today.getFullYear() - 1);
+        break;
+      case '5Y':
+        startDate.setFullYear(today.getFullYear() - 5);
+        break;
+      case 'Max':
+        startDate.setFullYear(today.getFullYear() - 10);
+        break;
+    }
+
+    const startStr = toDateString(startDate);
+    const filteredData = fullHistory.filter(d => d.date >= startStr);
+
+    // Append today's rate if available
+    if (currentRate) {
+      const todayStr = toDateString(today);
+      if (!filteredData.find(d => d.date === todayStr)) {
+        filteredData.push({ date: todayStr, rate: currentRate });
+      }
+    }
+
+    return filteredData;
+  }, [fullHistory]);
+
+  // Initial fetch of popular rates
   useEffect(() => {
-    fetchHistoricalData();
-  }, [fromCurrency, toCurrency, timeRange, exchangeRate]);
+    fetchPopularRates();
+  }, [fetchPopularRates]);
+
+  // Coordinated fetch when currency pair changes
+  useEffect(() => {
+    if (!fromCurrency || !toCurrency) return;
+
+    // Reset states
+    setHistoricalData([]);
+    setFullHistory([]);
+    setExchangeRate(null);
+    setConvertedAmount('');
+    setTimeRange('5D');
+    setIsLoadingChart(true);
+    setIsLoading(true);
+    setError(null);
+
+    const loadData = async () => {
+      try {
+        // Fetch rate and 5-day history in parallel
+        const [rate, historyRaw] = await Promise.all([
+          fetchExchangeRate(fromCurrency, toCurrency),
+          fetch5DayData(fromCurrency, toCurrency)
+        ]);
+
+        setExchangeRate(rate);
+        if (fromAmount) {
+          setConvertedAmount((parseFloat(fromAmount) * rate).toFixed(2));
+        }
+
+        if (historyRaw?.rates) {
+          const processedHistory = processAndFillData(
+            historyRaw.rates,
+            historyRaw.startDate,
+            historyRaw.endDate,
+            toCurrency
+          );
+
+          // Append today's live rate
+          const todayStr = toDateString(new Date());
+          const hasToday = processedHistory.some(d => d.date === todayStr);
+
+          if (!hasToday) {
+            processedHistory.push({ date: todayStr, rate });
+          }
+
+          setHistoricalData(processedHistory);
+        }
+
+        // Fetch full history in background for time range switching
+        fetchFullHistory(fromCurrency, toCurrency);
+
+      } catch (err) {
+        console.error('Coordinated fetch failed:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+      } finally {
+        setIsLoadingChart(false);
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [fromCurrency, toCurrency, fetchExchangeRate, fetch5DayData, processAndFillData, fetchFullHistory, fromAmount]);
+
+  // Convert currency when amount changes (debounced)
+  useEffect(() => {
+    if (!fromAmount || parseFloat(fromAmount) === 0) {
+      setConvertedAmount('');
+      return;
+    }
+
+    // If we already have a rate, just calculate
+    if (exchangeRate !== null) {
+      setConvertedAmount((parseFloat(fromAmount) * exchangeRate).toFixed(2));
+      return;
+    }
+
+    // Otherwise fetch the rate
+    const timeoutId = setTimeout(async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const rate = await fetchExchangeRate(fromCurrency, toCurrency);
+        setExchangeRate(rate);
+        setConvertedAmount((parseFloat(fromAmount) * rate).toFixed(2));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to convert currency');
+        setConvertedAmount('');
+      } finally {
+        setIsLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [fromAmount, exchangeRate, fromCurrency, toCurrency, fetchExchangeRate]);
+
+  // Update chart when time range changes and we have cached data
+  useEffect(() => {
+    if (fullHistory.length > 0) {
+      const filtered = getFilteredData(timeRange, exchangeRate);
+      setHistoricalData(filtered);
+    } else if (timeRange !== '5D') {
+      setIsLoadingChart(true);
+    }
+  }, [timeRange, fullHistory, exchangeRate, getFilteredData]);
+
+  // Sync live rate to chart data
+  useEffect(() => {
+    if (exchangeRate && historicalData.length > 0) {
+      const todayStr = toDateString(new Date());
+      setHistoricalData(prev => {
+        const existingIndex = prev.findIndex(d => d.date === todayStr);
+
+        if (existingIndex >= 0) {
+          if (prev[existingIndex].rate !== exchangeRate) {
+            const updated = [...prev];
+            updated[existingIndex] = { ...updated[existingIndex], rate: exchangeRate };
+            return updated;
+          }
+          return prev;
+        }
+
+        return [...prev, { date: todayStr, rate: exchangeRate }];
+      });
+    }
+  }, [exchangeRate, historicalData.length]);
 
   const handleSwapCurrencies = () => {
-    const tempCurrency = fromCurrency;
     setFromCurrency(toCurrency);
-    setToCurrency(tempCurrency);
+    setToCurrency(fromCurrency);
   };
 
   return (
