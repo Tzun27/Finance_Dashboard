@@ -369,8 +369,7 @@ export function CurrencyConverter() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-8 gap-12 items-center transform-gpu transition-transform duration-300 
-                     lg:scale-100 xl:scale-105 2xl:scale-110">
+        <div className="grid grid-cols-1 lg:grid-cols-8 gap-12 items-center">
           <div className="lg:col-span-3 space-y-6">
             <h3 className="text-2xl font-semibold text-foreground">
               Live Exchange Rates
@@ -512,8 +511,7 @@ export function CurrencyConverter() {
         </div>
 
         {/* Exchange Rate Trend Chart */}
-        <div className="mt-16 transform-gpu transition-transform duration-300 
-                     lg:scale-100 xl:scale-105 2xl:scale-110">
+        <div className="mt-16">
           <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
             <div className="mb-6">
               <h4 className="text-lg font-medium text-foreground mb-2">

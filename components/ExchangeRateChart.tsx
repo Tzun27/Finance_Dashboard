@@ -8,6 +8,7 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
+import { CHART_COLORS } from "@/lib/chart-config";
 
 // Chart component for displaying exchange rate trends
 export function ExchangeRateChart({
@@ -32,9 +33,8 @@ export function ExchangeRateChart({
     const endRate = rates[rates.length - 1];
     const isPositiveTrend = endRate >= startRate;
 
-    // Colors for positive (Green) and negative (Red) trends
-    // Using explicit colors to match Google Finance style
-    const color = isPositiveTrend ? "#137333" : "#d93025";
+    // Use shared chart colors for trend
+    const color = isPositiveTrend ? CHART_COLORS.trendPositive : CHART_COLORS.trendNegative;
 
     // Calculate domain padding for Y-axis to make the chart look better
     const domainPadding = (maxRate - minRate) * 0.1;
@@ -62,11 +62,11 @@ export function ExchangeRateChart({
         }
     };
 
-    const CustomTooltip = ({ active, payload, label }: any) => {
+    const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-popover border border-border px-3 py-2 rounded-lg shadow-md text-sm">
-                    <p className="text-muted-foreground mb-1">{formatDate(label)}</p>
+                    <p className="text-muted-foreground mb-1">{formatDate(label || '')}</p>
                     <p className="font-medium text-foreground">
                         1 {fromCurrency} = {payload[0].value.toFixed(4)} {toCurrency}
                     </p>

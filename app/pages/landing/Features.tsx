@@ -4,6 +4,9 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 import { Target, Calculator } from "lucide-react";
 import { scrollToElement } from "@/components/helper_functions/scrollUtils";
 
+// Navigation bar height offset for smooth scrolling
+const NAV_HEIGHT_OFFSET = 80;
+
 export function Features() {
   return (
     <section id="features" className="min-h-screen flex items-center animate-fade-in-up animate-delay-200">
@@ -22,7 +25,7 @@ export function Features() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <Card
             className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:scale-105 hover:bg-accent/50"
-            onClick={() => scrollToElement('compound-interest-calculator', 80)}
+            onClick={() => scrollToElement('compound-interest-calculator', NAV_HEIGHT_OFFSET)}
           >
             <CardHeader>
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
@@ -37,7 +40,7 @@ export function Features() {
 
           <Card
             className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:scale-105 hover:bg-accent/50"
-            onClick={() => scrollToElement('currency-converter', 80)}
+            onClick={() => scrollToElement('currency-converter', NAV_HEIGHT_OFFSET)}
           >
             <CardHeader>
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
@@ -52,7 +55,7 @@ export function Features() {
 
           <Card
             className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:scale-105 hover:bg-accent/50"
-            onClick={() => scrollToElement('mortgage-calculator', 80)}
+            onClick={() => scrollToElement('mortgage-calculator', NAV_HEIGHT_OFFSET)}
           >
             <CardHeader>
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">

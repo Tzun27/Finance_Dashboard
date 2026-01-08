@@ -364,7 +364,7 @@ export function MortgageCalculator() {
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             Estimate your monthly housing costs and understand the long-term financial impact of your mortgage.
-            See detailed breakdowns and explore "what if" scenarios.
+            See detailed breakdowns and explore &quot;what if&quot; scenarios.
           </p>
         </div>
 
@@ -652,7 +652,7 @@ export function MortgageCalculator() {
             <Card>
               <CardHeader>
                 <CardTitle>Payment Breakdown</CardTitle>
-                <CardDescription>First month's payment distribution</CardDescription>
+                <CardDescription>First month&apos;s payment distribution</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -663,7 +663,6 @@ export function MortgageCalculator() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={(entry: any) => `${entry.name}: ${(entry.percent * 100).toFixed(0)}%`}
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"

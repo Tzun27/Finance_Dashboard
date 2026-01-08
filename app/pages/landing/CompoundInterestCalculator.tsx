@@ -101,8 +101,7 @@ export function CompoundInterestCalculator() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-8 gap-12 items-center transform-gpu transition-transform duration-300 
-                     lg:scale-100 xl:scale-105 2xl:scale-110">
+        <div className="grid grid-cols-1 lg:grid-cols-8 gap-12 items-center">
           <div className="lg:col-span-3 space-y-6">
             <h3 className="text-2xl font-semibold text-foreground">
               Calculator Settings
