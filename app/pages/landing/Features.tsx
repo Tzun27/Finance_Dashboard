@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Target, Calculator, PieChart, TrendingUp, Eye, BarChart3 } from "lucide-react";
+import { Target, Calculator } from "lucide-react";
 import { scrollToElement } from "@/components/helper_functions/scrollUtils";
 
 export function Features() {
@@ -65,41 +65,7 @@ export function Features() {
             </CardHeader>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <TrendingUp className="h-6 w-6 text-primary" />
-              </div>
-              <CardTitle>Progress Analytics</CardTitle>
-              <CardDescription>
-                Monitor your financial journey with detailed analytics and progress reports.
-              </CardDescription>
-            </CardHeader>
-          </Card>
 
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Eye className="h-6 w-6 text-primary" />
-              </div>
-              <CardTitle>Real-time Updates</CardTitle>
-              <CardDescription>
-                See your financial progress update in real-time as you make changes to your goals.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <BarChart3 className="h-6 w-6 text-primary" />
-              </div>
-              <CardTitle>Custom Dashboards</CardTitle>
-              <CardDescription>
-                Create personalized dashboards that focus on what matters most to your financial goals.
-              </CardDescription>
-            </CardHeader>
-          </Card>
         </div>
       </div>
     </section>

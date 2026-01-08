@@ -89,7 +89,7 @@ export function CompoundInterestCalculator() {
   }, [initialAmount, monthlyContribution, annualInterestRate, timeHorizon, rateVariance, compoundingFrequency]);
 
   return (
-    <section id="compound-interest-calculator" className="min-h-screen flex items-center bg-background animate-fade-in-up animate-delay-300">
+    <section id="compound-interest-calculator" className="min-h-screen flex items-start pt-24 bg-background animate-fade-in-up animate-delay-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
