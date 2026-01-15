@@ -36,10 +36,10 @@ A modern, interactive web application for visualizing and planning your financia
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- npm, yarn, pnpm, or bun
+- **Node.js 18+** and npm/yarn/pnpm/bun
+- **Docker** (optional, for containerized deployment)
 
-### Installation
+### Local Development
 
 1. **Clone the repository**
    ```bash
@@ -47,36 +47,45 @@ A modern, interactive web application for visualizing and planning your financia
    cd finance_visualizer/finance-dashboard
    ```
 
-2. **Setup Environment**
-   Create a `.env.local` file with your API keys:
+2. **Setup environment variables**
+   
+   Copy `.env.example` and create `.env.local`:
    ```bash
-   NEXT_PUBLIC_FX_RATES_API_KEY=your_key_here
+   NEXT_PUBLIC_FX_RATES_API_KEY=your_api_key_here
    ```
 
-3. **Install dependencies**
+3. **Install dependencies and run**
    ```bash
    npm install
-   # or
-   yarn install
-   # or
-   pnpm install
-   # or
-   bun install
-   ```
-
-4. **Run the development server**
-   ```bash
    npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   # or
-   bun dev
    ```
 
-5. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
+4. **Open [http://localhost:3000](http://localhost:3000)**
+
+### Docker Deployment
+
+**Quick Start:**
+```bash
+# Using Docker Compose (recommended)
+docker-compose up
+
+# Or using Docker CLI
+docker build -t finance-dashboard .
+docker run -p 3000:3000 --env-file .env.local finance-dashboard
+```
+
+**Environment Variables:**
+- The `docker-compose.yml` automatically loads `.env.local`
+- For production, use cloud platform environment configuration (Google Cloud Run, AWS, etc.)
+- Never commit API keys to version control
+
+**Multi-Stage Build:**
+The Dockerfile uses a 3-stage build optimized for production:
+- **Stage 1 (deps)**: Production dependencies only
+- **Stage 2 (builder)**: Builds the application with all dev dependencies
+- **Stage 3 (runner)**: Minimal production image (~150MB) with non-root user
+
+See `.dockerignore` for excluded files from the build context.
 
 ## 🧪 Testing
 
@@ -128,10 +137,19 @@ finance-dashboard/
 ```
 
 ### Available Scripts
-- `npm run dev` - Start development server
+
+**Development:**
+- `npm run dev` - Start development server with Turbopack
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint checks
+- `npm test` - Run tests with Vitest
+- `npm run test:ui` - Run tests with Vitest UI
+
+**Docker:**
+- `docker-compose up` - Build and run with Docker Compose
+- `docker-compose down` - Stop and remove containers
+- `docker build -t finance-dashboard .` - Build Docker image
 
 ## 📝 License
 
