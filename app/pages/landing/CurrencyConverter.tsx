@@ -60,13 +60,8 @@ export function CurrencyConverter() {
 
   // Fetch exchange rate from API
   const fetchExchangeRate = useCallback(async (from: string, to: string): Promise<number> => {
-    const apiKey = process.env.NEXT_PUBLIC_FXRATES_API_KEY;
-    if (!apiKey || apiKey === 'your_api_key_here') {
-      throw new Error('API key missing');
-    }
-
     const response = await fetch(
-      `https://api.fxratesapi.com/convert?from=${from}&to=${to}&amount=1&api_key=${apiKey}`
+      `/api/fx/convert?from=${from}&to=${to}&amount=1`
     );
 
     if (!response.ok) throw new Error('Failed to fetch rate');
@@ -164,11 +159,8 @@ export function CurrencyConverter() {
   // Fetch popular exchange rates
   const fetchPopularRates = useCallback(async () => {
     try {
-      const apiKey = process.env.NEXT_PUBLIC_FXRATES_API_KEY;
-      if (!apiKey || apiKey === 'your_api_key_here') return;
-
       const response = await fetch(
-        `https://api.fxratesapi.com/latest?base=USD&currencies=EUR,GBP,JPY&api_key=${apiKey}`
+        `/api/fx/latest?base=USD&currencies=EUR,GBP,JPY`
       );
 
       if (!response.ok) return;
