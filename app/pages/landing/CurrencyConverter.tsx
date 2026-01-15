@@ -361,7 +361,7 @@ export function CurrencyConverter() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-8 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-8 gap-12 items-start">
           <div className="lg:col-span-3 space-y-6">
             <h3 className="text-2xl font-semibold text-foreground">
               Live Exchange Rates
@@ -394,7 +394,9 @@ export function CurrencyConverter() {
                   <Label htmlFor="from-currency">From</Label>
                   <Select value={fromCurrency} onValueChange={setFromCurrency}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Currency" />
+                      <SelectValue>
+                        {fromCurrency}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {currencies.map((currency) => (
@@ -421,7 +423,9 @@ export function CurrencyConverter() {
                   <Label htmlFor="to-currency">To</Label>
                   <Select value={toCurrency} onValueChange={setToCurrency}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Currency" />
+                      <SelectValue>
+                        {toCurrency}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {currencies.map((currency) => (
@@ -464,37 +468,79 @@ export function CurrencyConverter() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 bg-card border border-border rounded-lg p-6 shadow-sm">
-            <div className="mb-6">
-              <h4 className="text-lg font-medium text-foreground mb-2">Popular Exchange Rates</h4>
+          <div className="lg:col-span-5 bg-card border border-border rounded-lg p-8 shadow-sm">
+            <div className="mb-8">
+              <h4 className="text-xl font-semibold text-foreground mb-2">Popular Exchange Rates</h4>
               <p className="text-sm text-muted-foreground">
                 Live rates for commonly traded currency pairs
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">USD → EUR</span>
-                <span className="font-medium">
+            <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">USD → EUR</span>
+                <span className="text-lg font-bold text-foreground">
                   {popularRates.EUR ? popularRates.EUR.toFixed(4) : '...'}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">USD → GBP</span>
-                <span className="font-medium">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">USD → GBP</span>
+                <span className="text-lg font-bold text-foreground">
                   {popularRates.GBP ? popularRates.GBP.toFixed(4) : '...'}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">USD → JPY</span>
-                <span className="font-medium">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">USD → JPY</span>
+                <span className="text-lg font-bold text-foreground">
                   {popularRates.JPY ? popularRates.JPY.toFixed(2) : '...'}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">EUR → GBP</span>
-                <span className="font-medium">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">EUR → GBP</span>
+                <span className="text-lg font-bold text-foreground">
                   {popularRates.EUR && popularRates.GBP
                     ? (popularRates.GBP / popularRates.EUR).toFixed(4)
+                    : '...'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">GBP → USD</span>
+                <span className="text-lg font-bold text-foreground">
+                  {popularRates.GBP ? (1 / popularRates.GBP).toFixed(4) : '...'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">EUR → USD</span>
+                <span className="text-lg font-bold text-foreground">
+                  {popularRates.EUR ? (1 / popularRates.EUR).toFixed(4) : '...'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">JPY → USD</span>
+                <span className="text-lg font-bold text-foreground">
+                  {popularRates.JPY ? (1 / popularRates.JPY).toFixed(6) : '...'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">EUR → JPY</span>
+                <span className="text-lg font-bold text-foreground">
+                  {popularRates.EUR && popularRates.JPY
+                    ? (popularRates.JPY / popularRates.EUR).toFixed(2)
+                    : '...'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">GBP → JPY</span>
+                <span className="text-lg font-bold text-foreground">
+                  {popularRates.GBP && popularRates.JPY
+                    ? (popularRates.JPY / popularRates.GBP).toFixed(2)
+                    : '...'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground font-medium">GBP → EUR</span>
+                <span className="text-lg font-bold text-foreground">
+                  {popularRates.GBP && popularRates.EUR
+                    ? (popularRates.EUR / popularRates.GBP).toFixed(4)
                     : '...'}
                 </span>
               </div>
