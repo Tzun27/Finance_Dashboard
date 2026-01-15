@@ -1,20 +1,7 @@
-# Stage 1: Dependencies
-FROM node:20-alpine AS deps
-
-# Install libc6-compat for compatibility
-RUN apk add --no-cache libc6-compat
-
-WORKDIR /app
-
-# Copy package files
-COPY package.json package-lock.json ./
-
-# Install dependencies
-RUN npm ci --only=production --ignore-scripts && \
-    npm cache clean --force
-
-# Stage 2: Builder
+# Stage 1: Builder
 FROM node:20-alpine AS builder
+
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
@@ -31,38 +18,32 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Build the Next.js application
-RUN npm run build
+# Build the Next.js application without source maps
+RUN npm run build && \
+    rm -rf .next/cache
 
-# Stage 3: Runner (Production)
-FROM node:20-alpine AS runner
+# Stage 2: Runner (Production) - Using Distroless for minimal size
+FROM gcr.io/distroless/nodejs20-debian12 AS runner
 
 WORKDIR /app
 
 # Set to production environment
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-
-# Create a non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Copy necessary files from builder
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# The standalone output already includes minimal node_modules
+COPY --from=builder --chown=nonroot:nonroot /app/public ./public
+COPY --from=builder --chown=nonroot:nonroot /app/.next/standalone ./
+COPY --from=builder --chown=nonroot:nonroot /app/.next/static ./.next/static
 
-# Set correct permissions
-RUN chown -R nextjs:nodejs /app
-
-# Switch to non-root user
-USER nextjs
+# Use nonroot user (distroless default)
+USER nonroot
 
 # Expose the port Next.js runs on
 EXPOSE 3000
 
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-
 # Start the application
-CMD ["node", "server.js"]
+CMD ["server.js"]

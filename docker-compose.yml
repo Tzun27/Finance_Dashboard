@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   finance-dashboard:
+    image: finance-dashboard:latest
     build:
       context: .
       dockerfile: Dockerfile
