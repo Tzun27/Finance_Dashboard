@@ -5,7 +5,7 @@ import { Features } from "@/app/pages/landing/Features";
 import { CompoundInterestCalculator } from "@/app/pages/landing/CompoundInterestCalculator";
 import { CurrencyConverter } from "@/app/pages/landing/CurrencyConverter";
 import { MortgageCalculator } from "@/app/pages/landing/MortgageCalculator";
-import { CTA } from "@/app/pages/landing/CTA";
+import { ResumeSection } from "@/app/pages/landing/ResumeSection";
 import { Footer } from "@/app/pages/landing/Footer";
 
 export default function Home() {
@@ -18,7 +18,7 @@ export default function Home() {
       <CompoundInterestCalculator />
       <CurrencyConverter />
       <MortgageCalculator />
-      <CTA />
+      <ResumeSection />
       <Footer />
     </div>
   );
