@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function ResumeSection() {
   return (
@@ -10,10 +11,12 @@ export function ResumeSection() {
             Meet the creator
           </h2>
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Button size="lg" className="text-base">
-              About Me
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/about">
+              <Button size="lg" className="text-base">
+                About Me
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
