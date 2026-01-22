@@ -221,7 +221,7 @@ export function CompoundInterestCalculator() {
               <div className="flex flex-wrap gap-4 mt-3 text-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-1 bg-primary rounded-sm"></div>
-                  <span className="font-medium">Compound Interest</span>
+                  <span className="font-medium">With Interest</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-0.5 bg-muted-foreground"></div>
@@ -291,7 +291,7 @@ export function CompoundInterestCalculator() {
                     }}
                     formatter={(value, name) => [
                       `$${Number(value).toLocaleString()}`,
-                      name === 'compound' ? 'Compound Interest' :
+                      name === 'compound' ? 'With Interest' :
                         name === 'baseline' ? 'Baseline Savings' :
                           name === 'highVariance' ? 'High Scenario' :
                             name === 'lowVariance' ? 'Low Scenario' : name
